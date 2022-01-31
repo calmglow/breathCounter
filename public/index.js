@@ -71,20 +71,34 @@ function increase(){
 function 지난달정보가져오기(){
   let keyDate=0;
   let 숨수=0;
+  let 날숨수=0;
+  let 달숨수=0;
   for (i = 0; i < store.length; i++){
     keyDate= store.key(i)
     if (keyDate.startsWith(지난달Text)){
       지난달Stat.명상한날수++
-      숨수= 숨수 + JSON.parse(store.getItem(keyDate)).length
-      지난달Stat.일별기록[keyDate]=JSON.parse(store.getItem(keyDate))
+      const 날숨목록= JSON.parse(store.getItem(keyDate))
+      날숨수= 날숨목록.length
+      달숨수= 달숨수 + 날숨수
+      let 일평균숨간격=0
+      for (j=0; j< 날숨수; j++){
+        if ((j+1)<날숨수){
+          차이= 날숨목록[j+1] - 날숨목록[j]
+          if (차이>19000 || 차이<4000)차이=13000
+          일평균숨간격 += 차이
+        }
+      }
+      일평균숨간격= 일평균숨간격/(날숨수-1)/1000
+      지난달Stat.일별기록[keyDate]= {일평균숨간격, 날숨수}
     }
   }
-  지난달Stat.일별평균숨수= 숨수/지난달Stat.명상한날수
+  지난달Stat.일별평균숨수= 달숨수/지난달Stat.명상한날수
   
 }
 function 이번달정보가져오기(){
   let keyDate=0;
   let 달숨수=0;
+  let 날숨수=0;
   for (i = 0; i < store.length; i++){
     keyDate= store.key(i)
     if (keyDate.startsWith(이번달Text)){
@@ -96,7 +110,7 @@ function 이번달정보가져오기(){
       for (j=0; j< 날숨수; j++){
         if ((j+1)<날숨수){
           차이= 날숨목록[j+1] - 날숨목록[j]
-          if (차이>19000 || 차이<5000)차이=13000
+          if (차이>19000 || 차이<4000)차이=13000
           일평균숨간격 += 차이
         }
       }
